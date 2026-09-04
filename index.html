@@ -22,7 +22,7 @@
 
   h3{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:22px 0 10px;font-weight:600}
   h3:first-child{margin-top:0}
-  .drop{border:2px dashed #c9cfda;border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;background:#fafbfd;transition:.15s}
+  .drop{display:block;border:2px dashed #c9cfda;border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;background:#fafbfd;transition:.15s}
   .drop.over{border-color:var(--accent);background:#fff5f6}
   .drop strong{display:block;margin-bottom:4px}
   .drop small{color:var(--muted);display:block}
@@ -64,6 +64,14 @@
   .empty{color:var(--muted);text-align:center;max-width:420px}
   .empty strong{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
   details.adv summary{cursor:pointer;font-size:12px;color:var(--muted);margin:14px 0 4px;user-select:none}
+  details.section{margin:22px 0 10px}
+  details.section:first-of-type{margin-top:0}
+  details.section>summary{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;list-style:none;margin:0}
+  details.section>summary::-webkit-details-marker{display:none}
+  details.section>summary::before{content:'▸';display:inline-block;width:1em;transition:transform .15s}
+  details.section[open]>summary::before{transform:rotate(90deg)}
+  details.section[open]>summary{margin-bottom:10px}
+  details.section>.row:first-of-type,details.section>.drop{margin-top:0}
   .kbd{font-size:11px;color:var(--muted)}
 </style>
 </head>
@@ -87,7 +95,8 @@
   </div>
   <div class="btns"><button class="btn small" id="sample">Usar logo de exemplo</button></div>
 
-  <h3>Bordado</h3>
+  <details class="section" id="bordadoSection" open>
+  <summary>Bordado</summary>
   <div class="row"><label>Largura do bordado</label><input type="range" id="widthCm" min="3" max="25" step="0.5" value="8" data-full><output>8 cm</output></div>
   <div class="row"><label><input type="checkbox" id="aspectLock" checked> Manter proporção do logo</label></div>
   <div class="row"><label>Altura do bordado</label><input type="range" id="heightCm" min="3" max="25" step="0.5" value="8" disabled><output>8 cm</output></div>
@@ -113,6 +122,7 @@
     <div class="row"><label>Largura do contorno</label><input type="range" id="borderW" min="0.6" max="3" step="0.1" value="1.0" data-full><output>1,0 mm</output></div>
     <div class="row"><label>Brilho do fio</label><input type="range" id="sheen" min="0" max="1" step="0.05" value="0.55"><output>55%</output></div>
     <div class="row"><label>Direção da luz</label><input type="range" id="light" min="0" max="360" step="5" value="315"><output>315°</output></div>
+  </details>
   </details>
 
   <h3>Fios (cores detectadas)</h3>
@@ -771,7 +781,7 @@ $('#file').addEventListener('change',e=>handleFile(e.target.files[0]));
 const drop=$('#drop');
 ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
 ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
-drop.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
+drop.addEventListener('drop',e=>{ e.stopPropagation(); handleFile(e.dataTransfer.files[0]); });
 document.addEventListener('paste',e=>{ const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/')); if(it) handleFile(it.getAsFile()); });
 window.addEventListener('dragover',e=>e.preventDefault()); window.addEventListener('drop',e=>{e.preventDefault(); handleFile(e.dataTransfer.files[0]);});
 

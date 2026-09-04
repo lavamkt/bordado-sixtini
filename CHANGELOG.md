@@ -54,3 +54,18 @@ A regra de quando e como atualizar este arquivo está em
   espessura`), então continua sem vazar nas emendas entre pontos vizinhos, mas deixa o tecido
   aparecer nos vãos genuínos quando a densidade é alta. Ver Etapa 10 em
   [`docs/03-pipeline-bordado.md`](docs/03-pipeline-bordado.md).
+
+### Corrigido (mesmo dia, sessão seguinte)
+- **Caixa de soltar o logo sobrepondo o título "Logo"** (BUG-002 em
+  [`docs/07-bugs.md`](docs/07-bugs.md)) — `#drop` é um `<label>`, inline por padrão do navegador,
+  sem `display:block` declarado. Um-linha de CSS.
+- **Soltar o logo direto na caixa processava o arquivo duas vezes** (BUG-003, achado ao investigar
+  o BUG-002) — o evento de `drop` borbulhava do handler específico da caixa pro handler genérico
+  do `window`, chamando `run('full')` duas vezes seguidas. Corrigido com `e.stopPropagation()`.
+
+### Adicionado (mesmo dia, sessão seguinte)
+- **Seção "Bordado" virou um dropdown** (`<details class="section" id="bordadoSection" open>`,
+  aberto por padrão) — pedido do Kewin, agrupa todos os controles principais de bordado (largura,
+  altura, cores, ângulo, densidade, espessura, comprimento do ponto, relevo, emendas — inclusive o
+  "Ajustes finos" que já era um dropdown dentro dela) atrás de um cabeçalho clicável, igual o
+  padrão que já existia só pros ajustes finos.

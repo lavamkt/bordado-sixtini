@@ -1,6 +1,6 @@
 # 02. Arquitetura
 
-Tudo está em `index.html`. Números de linha abaixo são da versão de 2026-09-04 (821 linhas, depois
+Tudo está em `index.html`. Números de linha abaixo são da versão de 2026-09-04 (831 linhas, depois
 de embutir o logo padrão em base64 e adicionar emendas, altura independente e orçamento) e podem
 deslocar com edições; use `grep -n "^function \|^async function "` pra reconferir.
 
@@ -8,24 +8,24 @@ deslocar com edições; use `grep -n "^function \|^async function "` pra reconfe
 
 | Linhas | Bloco |
 |---|---|
-| 1 a 69 | `<head>`: meta, título e todo o CSS (variáveis de cor em `:root`, layout em grid, painel lateral, palco, lupa, caixa de orçamento) |
-| 70 a 159 | HTML: `<header>`, `<aside>` (painel de controles) e `<section class="palco">` (barra de botões, palco com canvas `#out`, `<img id="orig">` e canvas `#lupa`) |
-| 160 em diante | `<script>` com um IIFE `(() => { 'use strict'; ... })()` |
+| 1 a 77 | `<head>`: meta, título e todo o CSS (variáveis de cor em `:root`, layout em grid, painel lateral, palco, lupa, caixa de orçamento, dropdown de seção `details.section`) |
+| 78 a 169 | HTML: `<header>`, `<aside>` (painel de controles, com a seção "Bordado" dentro de um `<details class="section">`) e `<section class="palco">` (barra de botões, palco com canvas `#out`, `<img id="orig">` e canvas `#lupa`) |
+| 170 em diante | `<script>` com um IIFE `(() => { 'use strict'; ... })()` |
 
 Dentro do script, os blocos estão separados por comentários `// ---------- nome ----------`:
 
 | Bloco | Linhas | Conteúdo |
 |---|---|---|
-| estado | 168 a 178 | `RES`, helpers `$`, `clamp`, `fmt`, objeto `state`, `window.__sim = state`, `DEFAULT_LOGO_URI` (logo padrão da Sixtini em base64) |
-| utilidades numéricas | 179 a 244 | `mulberry32`, `distInside`, `boxBlurF`, `maxFilter`, `orientation`, `discOffsets` |
-| preparação da imagem | 245 a 303 | `prepareSource`, `buildWork` |
-| quantização de cores | 304 a 357 | `quantize` |
-| geração dos pontos | 358 a 480 | `genSatin`, `findComponents`, `planJumps` (emendas), `genTatami`, `analyze` |
-| sprites de fio | 481 a 539 | `spriteCache`, `getSprite`, `drawJumpThread` (linha de emenda), `drawStitch` |
-| tecido | 540 a 579 | `hexToRgb`, `makeFabric` |
-| render | 580 a 666 | `render` (base traçada só sob os pontos, altura independente/estica, desenho das emendas) |
-| pipeline | 667 a 721 | `tick`, `setStatus`, `readParams`, `naturalHeightCmFor`, `syncHeightSlider`, `updateBudget`, `run`, `schedule` |
-| UI | 722 a 821 | swatches, sliders, presets, upload, logo padrão (auto) e logo de exemplo, download, comparação, lupa, orçamento, `#exemplo` |
+| estado | 178 a 188 | `RES`, helpers `$`, `clamp`, `fmt`, objeto `state`, `window.__sim = state`, `DEFAULT_LOGO_URI` (logo padrão da Sixtini em base64) |
+| utilidades numéricas | 189 a 254 | `mulberry32`, `distInside`, `boxBlurF`, `maxFilter`, `orientation`, `discOffsets` |
+| preparação da imagem | 255 a 313 | `prepareSource`, `buildWork` |
+| quantização de cores | 314 a 367 | `quantize` |
+| geração dos pontos | 368 a 490 | `genSatin`, `findComponents`, `planJumps` (emendas), `genTatami`, `analyze` |
+| sprites de fio | 491 a 549 | `spriteCache`, `getSprite`, `drawJumpThread` (linha de emenda), `drawStitch` |
+| tecido | 550 a 589 | `hexToRgb`, `makeFabric` |
+| render | 590 a 676 | `render` (base traçada só sob os pontos, altura independente/estica, desenho das emendas) |
+| pipeline | 677 a 731 | `tick`, `setStatus`, `readParams`, `naturalHeightCmFor`, `syncHeightSlider`, `updateBudget`, `run`, `schedule` |
+| UI | 732 a 831 | swatches, sliders, presets, upload, logo padrão (auto) e logo de exemplo, download, comparação, lupa, orçamento, `#exemplo` |
 
 ## Objeto `state`
 
@@ -118,42 +118,43 @@ recalcula essas estruturas.
 
 | Função | Linha | Assinatura e papel |
 |---|---|---|
-| `mulberry32(seed)` | 180 | PRNG determinístico; usado pra jitter reprodutível |
-| `distInside(mask,W,H)` | 183 | Transformada de distância (chamfer 1 / 1,414) dentro da máscara, dois passes |
-| `boxBlurF(src,W,H,r)` | 202 | Box blur separável em `Float32Array` com somas correntes |
-| `maxFilter(src,W,H,r)` | 215 | Filtro de máximo separável (van Herk / Gil-Werman), janela `2r+1` |
-| `orientation(D,W,H,radii,mx)` | 231 | Campo de orientação por ângulo duplo do gradiente de `D`, suavizado em cada raio de `radii`; `sel[i]` escolhe a escala mais próxima de `2*mx[i]`; `at(i)` devolve o ângulo |
-| `discOffsets(r)` | 243 | Lista de deslocamentos `[dx,dy,...]` de um disco de raio `r` |
-| `prepareSource(img,removeBg)` | 246 | Reduz pra 1000 px, remove fundo por flood fill se pedido, recorta no conteúdo. Retorna canvas ou `null` |
-| `buildWork(src,p)` | 288 | Canvas de trabalho com margem, `rgba`, `mask`, `pxPerMm` |
-| `quantize(work,K,seed)` | 305 | k-means++ em amostra de 30 mil pixels, fusão de centros, descarte de clusters de borda, filtro de moda |
-| `genSatin(region,orient,W,H,spacing,maxLen,ci,kind,out,rng)` | 359 | Pontos de cetim por amostragem + marcha na direção do campo + mapa de cobertura |
-| `findComponents(mask,W,H)` | 377 | Componentes conectados (4-vizinhos) de uma máscara; devolve centróide e pixels de contorno de cada um. Usado pra achar letras/elementos separados de uma mesma cor |
-| `planJumps(comps,ci,out)` | 404 | Caminho guloso pelo vizinho mais próximo entre os componentes de uma cor; empurra em `out` o par de pontos de contorno mais próximos entre cada dupla consecutiva (candidatos de emenda) |
-| `genTatami(region,W,H,angleDeg,spacing,L,ci,out,rng)` | 423 | Linhas paralelas no ângulo, quebradas em pontos de comprimento `L` com escalonamento |
-| `analyze(work,q,p)` | 438 | Por cor (maior área primeiro): acha componentes/emendas na máscara crua, monta região com camadas, classifica cetim/contorno/tatami, gera pontos |
-| `getSprite(rgb,angle,variant,w,light,sheen)` | 483 | Sprite de fio (capa + meio + capa) iluminado pra um dos 32 ângulos; cacheado |
-| `drawJumpThread(ctx,j,rgb,pxPerMm,rng)` | 515 | Desenha uma linha de emenda (sombra + fio escurecido + brilho fino) com leve folga entre dois pontos |
-| `drawStitch(ctx,st,sp)` | 530 | Desenha um ponto rotacionado: capa esquerda, meio repetido, capa direita |
-| `makeFabric(type,hex,pxPerMm,W,H,rng)` | 542 | Tecido procedural: cor base + padrão por tipo + grão em `overlay` + vinheta |
-| `render(work,q,geom,p)` | 581 | Compõe tudo (inclusive o esticamento de altura independente e as emendas) no canvas `#out` (ver 03) |
-| `readParams()` | 670 | Lê todos os controles num objeto `p` |
-| `naturalHeightCmFor(work,widthCm)` | 678 | Altura proporcional (cm) do conteúdo recortado pra uma dada largura |
-| `syncHeightSlider(cm)` | 679 | Atualiza o slider e o `<output>` de altura sem disparar recomputação |
-| `updateBudget()` | 681 | Lê `geom.stitches.length` e `#pricePerPoint`, escreve o total em `#budgetValue`/`#budgetDetail` |
-| `run(kind)` | 688 | Orquestra o pipeline; trata `busy`/`pending`; sincroniza altura; atualiza status, botões e orçamento |
-| `renderSwatches()` | 723 | Cria os `<input type=color>` dos fios e o botão Restaurar |
-| `loadImage(src)` | 758 | Cria `Image`, detecta alpha numa amostra 200 px, define `#rmbg`, chama `run('full')` |
-| `handleFile(f)` | 769 | `FileReader` -> `loadImage` |
-| `syncLupa()` | 799 | Alinha o canvas da lupa ao canvas de saída (leva em conta `devicePixelRatio`) |
+| `mulberry32(seed)` | 190 | PRNG determinístico; usado pra jitter reprodutível |
+| `distInside(mask,W,H)` | 193 | Transformada de distância (chamfer 1 / 1,414) dentro da máscara, dois passes |
+| `boxBlurF(src,W,H,r)` | 212 | Box blur separável em `Float32Array` com somas correntes |
+| `maxFilter(src,W,H,r)` | 225 | Filtro de máximo separável (van Herk / Gil-Werman), janela `2r+1` |
+| `orientation(D,W,H,radii,mx)` | 241 | Campo de orientação por ângulo duplo do gradiente de `D`, suavizado em cada raio de `radii`; `sel[i]` escolhe a escala mais próxima de `2*mx[i]`; `at(i)` devolve o ângulo |
+| `discOffsets(r)` | 253 | Lista de deslocamentos `[dx,dy,...]` de um disco de raio `r` |
+| `prepareSource(img,removeBg)` | 256 | Reduz pra 1000 px, remove fundo por flood fill se pedido, recorta no conteúdo. Retorna canvas ou `null` |
+| `buildWork(src,p)` | 298 | Canvas de trabalho com margem, `rgba`, `mask`, `pxPerMm` |
+| `quantize(work,K,seed)` | 315 | k-means++ em amostra de 30 mil pixels, fusão de centros, descarte de clusters de borda, filtro de moda |
+| `genSatin(region,orient,W,H,spacing,maxLen,ci,kind,out,rng)` | 369 | Pontos de cetim por amostragem + marcha na direção do campo + mapa de cobertura |
+| `findComponents(mask,W,H)` | 387 | Componentes conectados (4-vizinhos) de uma máscara; devolve centróide e pixels de contorno de cada um. Usado pra achar letras/elementos separados de uma mesma cor |
+| `planJumps(comps,ci,out)` | 414 | Caminho guloso pelo vizinho mais próximo entre os componentes de uma cor; empurra em `out` o par de pontos de contorno mais próximos entre cada dupla consecutiva (candidatos de emenda) |
+| `genTatami(region,W,H,angleDeg,spacing,L,ci,out,rng)` | 433 | Linhas paralelas no ângulo, quebradas em pontos de comprimento `L` com escalonamento |
+| `analyze(work,q,p)` | 448 | Por cor (maior área primeiro): acha componentes/emendas na máscara crua, monta região com camadas, classifica cetim/contorno/tatami, gera pontos |
+| `getSprite(rgb,angle,variant,w,light,sheen)` | 493 | Sprite de fio (capa + meio + capa) iluminado pra um dos 32 ângulos; cacheado |
+| `drawJumpThread(ctx,j,rgb,pxPerMm,rng)` | 525 | Desenha uma linha de emenda (sombra + fio escurecido + brilho fino) com leve folga entre dois pontos |
+| `drawStitch(ctx,st,sp)` | 540 | Desenha um ponto rotacionado: capa esquerda, meio repetido, capa direita |
+| `makeFabric(type,hex,pxPerMm,W,H,rng)` | 552 | Tecido procedural: cor base + padrão por tipo + grão em `overlay` + vinheta |
+| `render(work,q,geom,p)` | 591 | Compõe tudo (inclusive o esticamento de altura independente e as emendas) no canvas `#out` (ver 03) |
+| `readParams()` | 680 | Lê todos os controles num objeto `p` |
+| `naturalHeightCmFor(work,widthCm)` | 688 | Altura proporcional (cm) do conteúdo recortado pra uma dada largura |
+| `syncHeightSlider(cm)` | 689 | Atualiza o slider e o `<output>` de altura sem disparar recomputação |
+| `updateBudget()` | 691 | Lê `geom.stitches.length` e `#pricePerPoint`, escreve o total em `#budgetValue`/`#budgetDetail` |
+| `run(kind)` | 698 | Orquestra o pipeline; trata `busy`/`pending`; sincroniza altura; atualiza status, botões e orçamento |
+| `renderSwatches()` | 733 | Cria os `<input type=color>` dos fios e o botão Restaurar |
+| `loadImage(src)` | 768 | Cria `Image`, detecta alpha numa amostra 200 px, define `#rmbg`, chama `run('full')` |
+| `handleFile(f)` | 779 | `FileReader` -> `loadImage` |
+| `syncLupa()` | 809 | Alinha o canvas da lupa ao canvas de saída (leva em conta `devicePixelRatio`) |
 
 ## Elementos de interface (ids)
 
 | Id | Elemento |
 |---|---|
-| `#drop`, `#file` | área de soltar e input de arquivo |
+| `#drop`, `#file` | área de soltar e input de arquivo. `#drop` é um `<label>` — precisa de `display:block` explícito no CSS (ver nota abaixo) |
 | `#rmbg` | checkbox "Remover fundo" |
 | `#sample` | botão do logo de exemplo |
+| `#bordadoSection` | `<details class="section" open>` que envolve toda a seção "Bordado" (sliders principais + `<details class="adv">` "Ajustes finos" lá dentro), com o `<summary>` estilizado como um `h3` clicável (seta `▸`/`▾`). Aberto por padrão |
 | `#widthCm #aspectLock #heightCm #k #angle #density #thread #stitch #relief #seam` | sliders principais (largura, trava de proporção, altura, cores, ângulo, densidade, espessura, comprimento do ponto, relevo, emendas entre letras) |
 | `#satinMax #border #borderW #sheen #light` | ajustes finos (dentro de `<details>`) |
 | `#swatches` | cores dos fios |
@@ -166,3 +167,12 @@ Cada `.row input[type=range]` tem um `<output>` irmão que é formatado no liste
 (bloco de `document.querySelectorAll('.row input[type=range]')` em `readParams`/UI), com regras
 por id (cm, graus, %, mm com 1 ou 2 casas). `#heightCm` reusa o mesmo formato de `#widthCm` (cm);
 `#seam` reusa o de `#sheen` (%).
+
+**`<label>`/`<summary>` sem `display` explícito é uma armadilha de CSS conhecida deste
+protótipo** (BUG-002, ver [07-bugs.md](07-bugs.md)): `<label>` é `display:inline` por padrão do
+navegador. `.drop` (o `<label>` da área de soltar logo) tem filhos `display:block`
+(`.drop strong`/`.drop small`), mas sem `display:block` na PRÓPRIA `.drop` o padding/borda do
+`<label>` não empurra os elementos vizinhos — o resultado visual é a caixa tracejada sobrepondo o
+`<h3>Logo</h3>` acima dela. Ao criar qualquer wrapper novo baseado em `<label>` (ou outro elemento
+inline por padrão: `<span>`, `<a>`) com filhos em bloco e padding/borda visíveis, declarar
+`display:block` nele desde o início — não confiar que os filhos block "arrastam" o pai.
