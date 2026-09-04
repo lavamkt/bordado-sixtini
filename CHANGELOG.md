@@ -38,3 +38,9 @@ A regra de quando e como atualizar este arquivo está em
 - **Orçamento estimado**: campo "Preço por ponto" e total calculado ao vivo (pontos × preço),
   numa caixa destacada no painel. Ver seção "Orçamento" em
   [`docs/04-parametros.md`](docs/04-parametros.md).
+
+### Adicionado (publicação)
+- Repositório próprio no GitHub da Lava (`github.com/lavamkt/bordado-sixtini`), publicado via
+  GitHub Pages em https://lavamkt.github.io/bordado-sixtini/ — link pra mandar pro cliente ver o
+  protótipo sem precisar do arquivo local. Regra de manter atualizado a cada mudança em
+  [`docs/06-processo.md`](docs/06-processo.md), Regra 4.

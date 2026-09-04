@@ -4,6 +4,13 @@ Página única (`index.html`), sem dependência nenhuma: abre direto no navegado
 Firefox, Safari), inclusive por duplo clique no arquivo. Nada é enviado pra servidor; todo o
 processamento roda em Canvas 2D no próprio navegador.
 
+**Prévia pública (pra mandar pro cliente):** https://lavamkt.github.io/bordado-sixtini/
+Publicado no GitHub (`github.com/lavamkt/bordado-sixtini`, conta da Lava) via GitHub Pages.
+Repositório isolado só desta pasta — não é o mesmo Drive/CLAUDE.md do resto do `_Dev`. Regra de
+manutenção (quem for mexer, ver [`docs/06-processo.md`](docs/06-processo.md), Regra 4): toda
+mudança commitada e publicada aqui é também enviada (`git push`) pra esse repositório, pra o link
+sempre mostrar a versão mais recente.
+
 O que faz: o usuário sobe o PNG (ou JPG) de um logo e a página mostra como ele ficaria bordado
 num tecido, com pontos de cetim, preenchimento tatami, relevo, brilho de fio e textura de tecido.
 

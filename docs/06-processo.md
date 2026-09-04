@@ -49,6 +49,31 @@ screenshot, ou reproduzir o problema junto. Esta regra é do ecossistema Lava in
 `Wordpress/CLAUDE.md`, seção "Qualquer bug que sobreviva a uma 1ª correção") — vale aqui do mesmo
 jeito, mesmo sem sistema de tickets.
 
+## Regra 4 — Toda mudança publicada também vai pro repositório público (GitHub Pages)
+
+Desde 2026-09-04, este protótipo tem um repositório próprio no GitHub da Lava
+(`github.com/lavamkt/bordado-sixtini`, conta `lavamkt` — credencial já configurada no Git
+Credential Manager desta máquina, ver `_Dev/_docs/credenciais.md` → "GitHub — Lava") publicado via
+GitHub Pages em **https://lavamkt.github.io/bordado-sixtini/**. É o link que o Kewin manda pro
+cliente ver o protótipo funcionando, sem precisar abrir o arquivo local.
+
+Pedido explícito do Kewin: **toda vez que o `index.html` (ou qualquer outro arquivo desta pasta)
+mudar, commitar e dar `git push` pro `main` desse repositório também** — não só editar o arquivo
+local. O repositório é isolado, só com o conteúdo desta pasta (`git init` feito direto em
+`Prototipo Bordado/`, não no `_Dev` inteiro). Identidade do commit já configurada localmente nesse
+repo (`user.name "Lava"`, `user.email "claude@lavamkt.com"`, mesmo padrão usado no repositório
+`assinatura-nex` da Nex) — não precisa reconfigurar. Fluxo depois de qualquer mudança:
+
+```bash
+cd "Sixtini/Simulador/Prototipo Bordado"
+git add -A
+git commit -m "resumo da mudança"
+git push
+```
+
+O GitHub Pages rebuilda sozinho a cada push (leva menos de um minuto); não precisa de nenhum passo
+extra de deploy.
+
 ## Onde isso se encaixa nas outras regras do projeto
 
 Este arquivo cobre só o registro (changelog + bugs). As convenções de código, como testar e como
