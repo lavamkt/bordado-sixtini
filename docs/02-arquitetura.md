@@ -1,6 +1,6 @@
 # 02. Arquitetura
 
-Tudo está em `index.html`. Números de linha abaixo são da versão de 2026-09-04 (816 linhas, depois
+Tudo está em `index.html`. Números de linha abaixo são da versão de 2026-09-04 (821 linhas, depois
 de embutir o logo padrão em base64 e adicionar emendas, altura independente e orçamento) e podem
 deslocar com edições; use `grep -n "^function \|^async function "` pra reconferir.
 
@@ -23,9 +23,9 @@ Dentro do script, os blocos estão separados por comentários `// ---------- nom
 | geração dos pontos | 358 a 480 | `genSatin`, `findComponents`, `planJumps` (emendas), `genTatami`, `analyze` |
 | sprites de fio | 481 a 539 | `spriteCache`, `getSprite`, `drawJumpThread` (linha de emenda), `drawStitch` |
 | tecido | 540 a 579 | `hexToRgb`, `makeFabric` |
-| render | 580 a 661 | `render` (inclui altura independente/estica e desenho das emendas) |
-| pipeline | 662 a 716 | `tick`, `setStatus`, `readParams`, `naturalHeightCmFor`, `syncHeightSlider`, `updateBudget`, `run`, `schedule` |
-| UI | 717 a 816 | swatches, sliders, presets, upload, logo padrão (auto) e logo de exemplo, download, comparação, lupa, orçamento, `#exemplo` |
+| render | 580 a 666 | `render` (base traçada só sob os pontos, altura independente/estica, desenho das emendas) |
+| pipeline | 667 a 721 | `tick`, `setStatus`, `readParams`, `naturalHeightCmFor`, `syncHeightSlider`, `updateBudget`, `run`, `schedule` |
+| UI | 722 a 821 | swatches, sliders, presets, upload, logo padrão (auto) e logo de exemplo, download, comparação, lupa, orçamento, `#exemplo` |
 
 ## Objeto `state`
 
@@ -137,15 +137,15 @@ recalcula essas estruturas.
 | `drawStitch(ctx,st,sp)` | 530 | Desenha um ponto rotacionado: capa esquerda, meio repetido, capa direita |
 | `makeFabric(type,hex,pxPerMm,W,H,rng)` | 542 | Tecido procedural: cor base + padrão por tipo + grão em `overlay` + vinheta |
 | `render(work,q,geom,p)` | 581 | Compõe tudo (inclusive o esticamento de altura independente e as emendas) no canvas `#out` (ver 03) |
-| `readParams()` | 665 | Lê todos os controles num objeto `p` |
-| `naturalHeightCmFor(work,widthCm)` | 673 | Altura proporcional (cm) do conteúdo recortado pra uma dada largura |
-| `syncHeightSlider(cm)` | 674 | Atualiza o slider e o `<output>` de altura sem disparar recomputação |
-| `updateBudget()` | 676 | Lê `geom.stitches.length` e `#pricePerPoint`, escreve o total em `#budgetValue`/`#budgetDetail` |
-| `run(kind)` | 683 | Orquestra o pipeline; trata `busy`/`pending`; sincroniza altura; atualiza status, botões e orçamento |
-| `renderSwatches()` | 718 | Cria os `<input type=color>` dos fios e o botão Restaurar |
-| `loadImage(src)` | 753 | Cria `Image`, detecta alpha numa amostra 200 px, define `#rmbg`, chama `run('full')` |
-| `handleFile(f)` | 764 | `FileReader` -> `loadImage` |
-| `syncLupa()` | 794 | Alinha o canvas da lupa ao canvas de saída (leva em conta `devicePixelRatio`) |
+| `readParams()` | 670 | Lê todos os controles num objeto `p` |
+| `naturalHeightCmFor(work,widthCm)` | 678 | Altura proporcional (cm) do conteúdo recortado pra uma dada largura |
+| `syncHeightSlider(cm)` | 679 | Atualiza o slider e o `<output>` de altura sem disparar recomputação |
+| `updateBudget()` | 681 | Lê `geom.stitches.length` e `#pricePerPoint`, escreve o total em `#budgetValue`/`#budgetDetail` |
+| `run(kind)` | 688 | Orquestra o pipeline; trata `busy`/`pending`; sincroniza altura; atualiza status, botões e orçamento |
+| `renderSwatches()` | 723 | Cria os `<input type=color>` dos fios e o botão Restaurar |
+| `loadImage(src)` | 758 | Cria `Image`, detecta alpha numa amostra 200 px, define `#rmbg`, chama `run('full')` |
+| `handleFile(f)` | 769 | `FileReader` -> `loadImage` |
+| `syncLupa()` | 799 | Alinha o canvas da lupa ao canvas de saída (leva em conta `devicePixelRatio`) |
 
 ## Elementos de interface (ids)
 

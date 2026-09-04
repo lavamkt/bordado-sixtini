@@ -167,8 +167,13 @@ Por cima: grão em `overlay` (tile 160 px de ruído; mais forte no jeans) e uma 
    - **Franzido**: fora do bordado, escurece até 9% numa faixa de 2,2 mm (distância da máscara
      invertida `Dout`), com ruído multiplicativo.
 2. Camada de fios (canvas transparente):
-   - **Base** opaca com a cor de cada fio a 50% de brilho em todos os pixels rotulados (não
-     deixa o tecido vazar entre fios).
+   - **Base**: um `stroke()` de `x1,y1` a `x2,y2` de CADA `stitch`, na cor do fio a 50% de brilho,
+     largura `1,15 * espessura`. Corrigido em 2026-09-04 (era um preenchimento opaco de TODOS os
+     pixels rotulados daquela cor, região inteira — cobria toda emenda entre passadas de fio, mas
+     também escondia o tecido por baixo mesmo em áreas bem mais espaçadas que a densidade
+     escolhida, deixando a densidade sem efeito visual nenhum no fundo entre os fios). Agora só
+     cobre a vizinhança real de cada ponto: junta as emendas entre pontos vizinhos como antes, mas
+     deixa o tecido aparecer nos vãos genuínos quando a densidade é alta (espaçada).
    - Todos os `stitches` na ordem gerada, com `getSprite`/`drawStitch`. A cada 4096 pontos há
      um `await tick()` pra atualizar o status.
    - **Furos de agulha**: um disco escuro de raio `0,16 * espessura` no fim de cada ponto de

@@ -601,14 +601,19 @@ async function render(work,q,geom,p){
   }
   fctx.putImageData(fid,0,0);
 
-  // camada dos fios: base (fio de fundo) + pontos
+  // camada dos fios: base (fio de fundo) só embaixo do traçado real de cada ponto — não a
+  // região da cor inteira, senão o tecido nunca aparece entre fios quando a densidade é baixa
   setStatus('Bordando...',true); await tick();
   const layer=document.createElement('canvas'); layer.width=W; layer.height=H;
   const lctx=layer.getContext('2d',{willReadFrequently:true});
-  const base=lctx.createImageData(W,H), bd=base.data;
-  for(let i=0;i<W*H;i++){ const l=q.labels[i]; if(l<0) continue; const c=state.palette[l]; const o=i*4; bd[o]=c[0]*0.5; bd[o+1]=c[1]*0.5; bd[o+2]=c[2]*0.5; bd[o+3]=255; }
-  lctx.putImageData(base,0,0);
-  const st=geom.stitches; let n=0;
+  const st=geom.stitches;
+  lctx.lineCap='round'; lctx.lineJoin='round'; lctx.lineWidth=w*1.15;
+  for(const s of st){
+    const cb=state.palette[s.c];
+    lctx.strokeStyle=`rgb(${cb[0]*0.5|0},${cb[1]*0.5|0},${cb[2]*0.5|0})`;
+    lctx.beginPath(); lctx.moveTo(s.x1,s.y1); lctx.lineTo(s.x2,s.y2); lctx.stroke();
+  }
+  let n=0;
   for(const s of st){
     const ang=Math.atan2(s.y2-s.y1,s.x2-s.x1);
     const sp=getSprite(state.palette[s.c],ang,(n*7)%3,w,light,p.sheen);

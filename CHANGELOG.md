@@ -44,3 +44,13 @@ A regra de quando e como atualizar este arquivo está em
   GitHub Pages em https://lavamkt.github.io/bordado-sixtini/ — link pra mandar pro cliente ver o
   protótipo sem precisar do arquivo local. Regra de manter atualizado a cada mudança em
   [`docs/06-processo.md`](docs/06-processo.md), Regra 4.
+
+### Corrigido (mesmo dia, sessão seguinte)
+- **Tecido não aparecia entre os fios ao aumentar a densidade** (pedido do Kewin). A "base" da
+  camada de bordado preenchia opacamente TODA a região da cor (pensada pra evitar tecido vazando
+  nas emendas entre passadas vizinhas), então nenhuma densidade — por mais espaçada que fosse —
+  deixava o tecido aparecer nos vãos reais entre os fios; o efeito da densidade sumia visualmente.
+  Agora a base é um traço fino só ao longo do trajeto real de cada ponto (largura `1,15 *
+  espessura`), então continua sem vazar nas emendas entre pontos vizinhos, mas deixa o tecido
+  aparecer nos vãos genuínos quando a densidade é alta. Ver Etapa 10 em
+  [`docs/03-pipeline-bordado.md`](docs/03-pipeline-bordado.md).

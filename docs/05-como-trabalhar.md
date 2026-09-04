@@ -94,7 +94,7 @@ Detalhes que já custaram tempo:
 | Cor legítima sumiu | Mesmo critério pegou uma cor real fina, ou área < 0,4%. Subir "Cores de fio" não ajuda; relaxar o limiar |
 | Área que devia ser tatami virou cetim radial | Largura local abaixo de `satinMax`, ou a região foi recortada por outra cor sem ser "envolvida" (só cores **posteriores** na ordem por área entram na expansão). Ver `analyze` |
 | Leque nas pontas dos traços | Orientação. Ver raios em `orientation` e a escolha por `2*mx` |
-| Tecido aparecendo entre fios | Densidade maior que a espessura do fio, ou base a 50% de brilho não cobrindo (ver `render`, bloco `base`) |
+| Tecido aparecendo entre fios | **Esperado desde 2026-09-04** se a densidade estiver espaçada (é o pedido do Kewin — ver Etapa 10 em [03-pipeline-bordado.md](03-pipeline-bordado.md)). Só é bug se aparecer com densidade baixa/apertada: conferir se a largura do `stroke` da base (`1,15 * espessura`) ficou menor que o espaçamento real entre pontos vizinhos |
 | Lento | Número de cores (cada cor roda chamfer + max filter + 6 blurs + flood fill) e densidade baixa. Tempos normais: 1 a 4 s |
 | Lupa desalinhada | `syncLupa` depende do `getBoundingClientRect` do canvas; chamar depois de qualquer mudança de layout |
 | Status mostra tempo muito baixo | O tempo exibido é do último `run`; se houve um `render` pendente logo após o `full`, é o tempo dele |

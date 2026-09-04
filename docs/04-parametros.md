@@ -21,7 +21,7 @@ mexer no controle refaz a geometria (`full`) ou só a pintura (`render`). Ver re
 | Altura do bordado | `heightCm` | 3 a 25 cm | igual à largura, sincronizado depois do 1º `full` | `render` | Só ativo com a proporção destravada. Diferente da altura natural, estica o resultado final na vertical (Etapa 12 em [03](03-pipeline-bordado.md)) |
 | Cores de fio | `k` | 1 a 8 | 4 | `full` | K máximo do k-means. O resultado pode ter menos cores (fusão e descarte) |
 | Ângulo do preenchimento | `angle` | 0 a 180° | 45° | `full` | Direção das linhas do tatami |
-| Densidade (espaço entre fios) | `density` | 0,25 a 0,6 mm | 0,38 mm | `full` | Espaçamento entre linhas de tatami e entre pontos de cetim. Menor = mais pontos, mais lento |
+| Densidade (espaço entre fios) | `density` | 0,25 a 0,6 mm | 0,38 mm | `full` | Espaçamento entre linhas de tatami e entre pontos de cetim. Menor = mais pontos, mais lento. Valores altos deixam o tecido visível nos vãos entre os fios (a base só cobre a vizinhança de cada ponto, não a região inteira — ver Etapa 10 em [03](03-pipeline-bordado.md)) |
 | Espessura do fio | `thread` | 0,3 a 0,7 mm | 0,45 mm | `render` | Altura do sprite. Maior que a densidade = fios se sobrepõem (esperado) |
 | Comprimento do ponto | `stitch` | 2 a 6 mm | 3,5 mm | `full` | Comprimento `L` dos pontos de tatami |
 | Relevo | `relief` | 0 a 2,5 mm | 1,0 mm | `render` | Altura `pad` do mapa de altura. 0 desliga a etapa |
